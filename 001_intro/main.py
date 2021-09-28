@@ -7,28 +7,24 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 haystack_img = cv.imread('albion_farm.jpg', cv.IMREAD_UNCHANGED)
 needle_img = cv.imread('albion_cabbage.jpg', cv.IMREAD_UNCHANGED)
-result = cv.matchTemplate(haystack_img, needle_img, cv.TM_CCOEFF_NORMED)
-
-# get the best match position
-min_Val, max_Val, min_Loc, max_Loc = cv.minMaxLoc(result)
-
-print(f'best match top left position:{str(max_Loc)}')
-print(f'best match confidence:{max_Val}')
-
-threshold = 0.8
-if max_Val >= threshold:
+result = cv.matchTemplate(haystack_img, needle_img, cv.TM_SQDIFF_NORMED)
+print(result)
+threshold = 0.17
+locations = np.where(result <= threshold)
+# locations = list(zip(*locations[::-1]))
+if locations:
     print('found needle.')
-    # get dimensions of the needle image
     needle_w = needle_img.shape[1]
     needle_h = needle_img.shape[0]
-
-    top_left = max_Loc
-    bottom_right = (top_left[0]+needle_w, top_left[1]+needle_h)
-
-    cv.rectangle(haystack_img, top_left, bottom_right,
-                 (0, 255.0), 2, cv.LINE_4)
-    # cv.imshow('Result', haystack_img)
-    # cv.waitKey(0)
-    cv.imwrite('result.jpg', haystack_img)
+    line_color = (0, 255, 0)
+    line_type = cv.LINE_4
+    for loc in zip(*locations[::-1]):
+        print(loc)
+        top_left = loc
+        bottom_right = (top_left[0]+needle_w, top_left[1]+needle_h)
+        cv.rectangle(haystack_img, top_left,
+                     bottom_right, line_color, line_type)
+    cv.imshow('Matches', haystack_img)
+    cv.waitKey(0)
 else:
-    print('Needld not found.')
+    print('Needle not found.')
