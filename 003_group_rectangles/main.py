@@ -9,7 +9,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 def findClickPositions(needle_img_path, haystack_img_path, threshold=0.5, debug_mode=None):
-        
+
     # https://docs.opencv.org/4.2.0/d4/da8/group__imgcodecs.html
     haystack_img = cv.imread(haystack_img_path, cv.IMREAD_UNCHANGED)
     needle_img = cv.imread(needle_img_path, cv.IMREAD_UNCHANGED)
@@ -25,7 +25,7 @@ def findClickPositions(needle_img_path, haystack_img_path, threshold=0.5, debug_
     # Get the all the positions from the match result that exceed our threshold
     locations = np.where(result >= threshold)
     locations = list(zip(*locations[::-1]))
-    #print(locations)
+    # print(locations)
 
     # You'll notice a lot of overlapping rectangles get drawn. We can eliminate those redundant
     # locations by using groupRectangles().
@@ -41,8 +41,9 @@ def findClickPositions(needle_img_path, haystack_img_path, threshold=0.5, debug_
     # done. If you put it at 2 then an object needs at least 3 overlapping rectangles to appear
     # in the result. I've set eps to 0.5, which is:
     # "Relative difference between sides of the rectangles to merge them into a group."
-    rectangles, weights = cv.groupRectangles(rectangles, groupThreshold=1, eps=0.5)
-    #print(rectangles)
+    rectangles, weights = cv.groupRectangles(
+        rectangles, groupThreshold=1, eps=0.5)
+    # print(rectangles)
 
     points = []
     if len(rectangles):
@@ -67,12 +68,12 @@ def findClickPositions(needle_img_path, haystack_img_path, threshold=0.5, debug_
                 top_left = (x, y)
                 bottom_right = (x + w, y + h)
                 # Draw the box
-                cv.rectangle(haystack_img, top_left, bottom_right, color=line_color, 
+                cv.rectangle(haystack_img, top_left, bottom_right, color=line_color,
                              lineType=line_type, thickness=2)
             elif debug_mode == 'points':
                 # Draw the center point
-                cv.drawMarker(haystack_img, (center_x, center_y), 
-                              color=marker_color, markerType=marker_type, 
+                cv.drawMarker(haystack_img, (center_x, center_y),
+                              color=marker_color, markerType=marker_type,
                               markerSize=40, thickness=2)
 
         if debug_mode:
@@ -83,9 +84,10 @@ def findClickPositions(needle_img_path, haystack_img_path, threshold=0.5, debug_
     return points
 
 
-points = findClickPositions('albion_cabbage.jpg', 'albion_farm.jpg', debug_mode='points')
+points = findClickPositions(
+    'albion_cabbage.jpg', 'albion_farm.jpg', debug_mode='points')
 print(points)
-points = findClickPositions('albion_turnip.jpg', 'albion_farm.jpg', 
+points = findClickPositions('albion_turnip.jpg', 'albion_farm.jpg',
                             threshold=0.70, debug_mode='rectangles')
 print(points)
 print('Done.')
